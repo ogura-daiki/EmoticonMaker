@@ -16,8 +16,6 @@ split-panel{
 .output{
   font-size:64px;
   display:block;
-  width:100%;
-  height:100%;
   text-align:center;
   border:none;
   padding:0px;
@@ -65,7 +63,7 @@ class MyElement extends BaseElement{
         this.selectionParts,
         ()=>html`
           <fit-input
-            class="fill"
+            class="fill output"
             .value=${previewValue}
           ></fit-input>
         `

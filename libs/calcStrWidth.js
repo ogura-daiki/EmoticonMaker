@@ -20,10 +20,8 @@ const getStyledCache = (style) => {
 const calcStrWidth = (str, style) => {
   const cache = getStyledCache(style);
   if(cache.has(str)){
-    console.log(style, "cache");
     return cache.get(str);
   }
-  console.log(style, "nocache");
   const ctx = canvas.getContext("2d");
   ctx.font = style;
   const result = ctx.measureText(str).width;
@@ -38,16 +36,13 @@ const findFitStrWidth = (width, str, style, max=width) => {
   while(count > 0){
     let sizedStyle = `${before}px ${style}`;
     const calcedWidth = calcStrWidth(str, sizedStyle);
-    console.log({calcedWidth});
     if(calcedWidth === width) return before;
     if(history.has(before)){
       if(calcedWidth > width) return before-1;
       return before;
     }
     history.add(before);
-    console.log({before});
     before = Math.floor(before * (width / calcedWidth));
-    console.log({before}, (width / calcedWidth));
     count--;
   }
 }

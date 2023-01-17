@@ -2,7 +2,7 @@ import { css, html, when } from "./elements/Lit.js";
 import BaseElement from "./elements/BaseElement.js";
 import "./elements/Split.js";
 import "./elements/PartsPicker.js";
-import { findFitStrWidth } from "./libs/calcStrWidth.js";
+import "./elements/FittingInput.js";
 
 const style = css`
 :host{
@@ -34,15 +34,6 @@ const getTemplateValues = (data) => {
   return v.join("");
 }
 
-const displayWidth = (()=>{
-  const vw = document.createElement("div");
-  vw.style.width = "100vw";
-  document.body.append(vw);
-  const result = +(getComputedStyle(vw).width||"").match(/^\d+/)[0];
-  vw.remove();
-  return result;
-})();
-
 class MyElement extends BaseElement{
   static get styles(){
     return [super.styles, style];
@@ -73,12 +64,10 @@ class MyElement extends BaseElement{
       ${when(
         this.selectionParts,
         ()=>html`
-          <input
-            class="output"
-            type="text"
-            style="font-size:${findFitStrWidth(displayWidth, previewValue, "sans-serif")}px"
-            .value=${getTemplateValues(this.selectionParts.body.content(this.selectionParts))}
-          >
+          <fit-input
+            class="fill"
+            .value=${previewValue}
+          ></fit-input>
         `
       )}
     </div>

@@ -55,6 +55,31 @@ const style = css`
   background:white;
   font-size:0.8rem;
 }
+
+.partsGroupNameList{
+  gap:4px;
+  border-bottom:lightgray 1px solid;
+  background:white;
+  overflow-x:overlay;
+}
+
+.partsGroupName{
+  appearance:none;
+  background:transparent;
+  color:black;
+  border:none;
+  outline:none;
+  padding:8px 16px;
+  height:100%;
+  transition:background .3s ease-out;
+  box-sizing:border-box;
+  white-space:nowrap;
+}
+.partsGroupName.selection{
+  appearance:none;
+  background:rgba(0,0,0,.05);
+  border-bottom:coral solid 2px;
+}
 `;
 
 
@@ -85,16 +110,17 @@ class PartsPicker extends BaseElement {
   render(){
     return html`
     <div class="fill col">
-      <div class="row" style="gap:4px;padding:4px;border-bottom:lightgray 1px solid;background:white;">
+      <div class="row partsGroupNameList scrollOverlay">
         ${this.partsGroups.map(({id, label})=>html`
           <button
+            class="partsGroupName ${this.selection === id?"selection":""}"
             @click=${e=>{
               this.selection = id; 
             }}
           >${label}</button>
         `)}
       </div>
-      <div class="grow row wrap previewList">
+      <div class="grow row wrap previewList scrollOverlay">
       ${when(this.selection!=undefined, ()=>{
         const partsGroup = this.partsGroups.find(i=>i.id === this.selection);
         return partsGroup.items.map(item=>html`

@@ -32,6 +32,23 @@ const common = css`
   flex-basis:0px;
   flex-grow:1;
 }
+
+.scrollOverlay::-webkit-scrollbar {
+  width:4px;
+  height:4px;
+}
+/*スクロールバーの軌道*/
+.scrollOverlay::-webkit-scrollbar-track {
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+}
+
+/*スクロールバーの動く部分*/
+.scrollOverlay::-webkit-scrollbar-thumb {
+  background-color: rgba(200,200,200, .5);
+  border-radius: 10px;
+  box-shadow:0 0 0 1px rgba(255, 255, 255, .3);
+}
 `;
 
 class BaseElement extends LitElement{

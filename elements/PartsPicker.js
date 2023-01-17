@@ -1,134 +1,7 @@
+import { Insert, InsertTarget } from "../libs/emoticon/core.js";
+import { Eye, Mouth, Cheek, Outline, Body } from "../libs/emoticon/Parts.js";
 import BaseElement from "./BaseElement.js";
 import { css, html, when } from "./Lit.js";
-
-
-const simplePartsList = ["outline.left", "cheek.left", "eye.left", "mouth.value", "eye.right", "cheek.right", "outline.right"];
-
-const LeftRight = (...v)=>{
-  let [left, right] = v;
-  if(!right){
-    right = left;
-  }
-  return {left, right};
-}
-const Eye = (name, ...parts)=>{
-  const lr = LeftRight(...parts);
-  const eye = {...lr};
-  eye.name = name;
-  eye.content = (options) => genPreview(
-    simplePartsList,
-    {...options, eye:lr},
-    [InsertTarget.eye.left, InsertTarget.eye.right]
-  );
-  return eye;
-}
-const Mouth = (name, value)=>{
-  const mouth = {value};
-  mouth.name = name;
-  mouth.content = (options) => genPreview(
-    simplePartsList,
-    {...options, mouth:{value}},
-    [InsertTarget.mouth]
-  );
-  return mouth;
-}
-const Outline = (name, ...parts) =>{
-  const lr = LeftRight(...parts);
-  const outline = {...lr};
-  outline.name = name;
-  outline.content = (options) => genPreview(
-    simplePartsList,
-    {...options, outline:lr},
-    [InsertTarget.outline.left, InsertTarget.outline.right]
-  );
-  return outline;
-}
-const NamedTarget = name => ({target:name, name(){return this.target}});
-const InsertTarget = {
-  outline:{
-    left:NamedTarget("outline.left"),
-    right:NamedTarget("outline.right"),
-  },
-  cheek:{
-    left:NamedTarget("cheek.left"),
-    right:NamedTarget("cheek.right"),
-  },
-  eye:{
-    left:NamedTarget("eye.left"),
-    right:NamedTarget("eye.right"),
-  },
-  mouth:NamedTarget("mouth.value"),
-}
-const Insert = {
-  Before:(value, target) => ({...target, position:"before", value}),
-  After:(value, target) => ({...target, position:"after", value}),
-};
-
-const genPreview = (list, parts, lighlights=[]) => {
-  const lighlightsSet = new Set(lighlights.map(nt=>nt.name()));
-  const values = list.map(query=>{
-    if(typeof query === "string"){
-      const path = query.split(".").filter(v=>v);
-      let partObj = parts;
-      for(const pathPart of path){
-        partObj = partObj[pathPart];
-      }
-      return lighlightsSet.has(query)?hl(partObj):ll(partObj);
-    }
-    
-    throw new Error("胴体データの解析に失敗");
-  });
-
-  const strs = [...Array(values.length+1)].map(()=>"");
-  strs.raw = [...strs];
-
-  return html(strs, ...values);
-}
-
-const InsertParser = (groupName, list, inserts) => {
-  list = [...list];
-  const props = {};
-  const listKeys = [];
-  let propCount = 0;
-  for(const insert of inserts){
-    const index = list.findIndex(target => insert.target === target);
-    if(index < 0){
-      throw new Error(`挿入先が存在しません：${insert.target}`);
-    }
-    
-    //挿入する値リストに追加
-    const propName = "v"+propCount++;
-    props[propName] = insert.value;
-    //挿入先を生成
-    const insertIndex = index + (insert.position==="before"?0:1);
-    //挿入
-    const listKey = `${groupName}.${propName}`;
-    listKeys.push(NamedTarget(listKey));
-    list.splice(insertIndex, 0, listKey);
-  }
-  return {list, listKeys, props}
-}
-
-const Body = (name, inserts=[]) => {
-  const body = {name};
-
-  const {props, listKeys, list} = InsertParser("body", simplePartsList, inserts);
-
-  body.content = (options) => {
-    return genPreview(list, {...options, body:props}, listKeys);
-  };
-  return body;
-}
-const Cheek = (name, ...parts) => {
-  const lr = LeftRight(...(parts||[""]));
-  const cheek = {name, ...lr};
-  cheek.content = (options) => genPreview(
-    simplePartsList,
-    {...options, cheek:lr},
-    [InsertTarget.cheek.left, InsertTarget.cheek.right]
-  );
-  return cheek;
-}
 
 const Outlines = {
   id:"outline",
@@ -721,9 +594,6 @@ const defaultOptions = {
   eye:Eyes.items[0],
   mouth:Mouths.items[0],
 };
-
-const hl = (val) => html`<span class="highlight">${val}</span>`;
-const ll = (val) => html`<span class="lowlight">${val}</span>`;
 
 const style = css`
 :host{

@@ -74,6 +74,7 @@ const style = css`
   transition:background .3s ease-out;
   box-sizing:border-box;
   white-space:nowrap;
+  user-select:none;
 }
 .partsGroupName.selection{
   appearance:none;

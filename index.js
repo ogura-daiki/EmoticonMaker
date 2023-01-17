@@ -2,6 +2,7 @@ import { css, html, when } from "./elements/Lit.js";
 import BaseElement from "./elements/BaseElement.js";
 import "./elements/Split.js";
 import "./elements/PartsPicker.js";
+import { findFitStrWidth } from "./libs/calcStrWidth.js";
 
 const style = css`
 :host{
@@ -23,6 +24,7 @@ split-panel{
   margin:0px;
   vertical-align:center;
   outline:none;
+  font-family: sans-serif;
 }
 `;
 
@@ -31,6 +33,15 @@ const getTemplateValues = (data) => {
   const v = [...values, ''].map(e => typeof e === 'object' ? getTemplateValues(e) : e )      
   return v.join("");
 }
+
+const displayWidth = (()=>{
+  const vw = document.createElement("div");
+  vw.style.width = "100vw";
+  document.body.append(vw);
+  const result = +(getComputedStyle(vw).width||"").match(/^\d+/)[0];
+  vw.remove();
+  return result;
+})();
 
 class MyElement extends BaseElement{
   static get styles(){
@@ -49,6 +60,9 @@ class MyElement extends BaseElement{
   }
 
   render(){
+
+    const previewValue = this.selectionParts?getTemplateValues(this.selectionParts.body.content(this.selectionParts)):"";
+
     return html`
     <split-panel
       class="fill"
@@ -62,6 +76,7 @@ class MyElement extends BaseElement{
           <input
             class="output"
             type="text"
+            style="font-size:${findFitStrWidth(displayWidth, previewValue, "sans-serif")}px"
             .value=${getTemplateValues(this.selectionParts.body.content(this.selectionParts))}
           >
         `

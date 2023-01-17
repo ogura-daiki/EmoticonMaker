@@ -1,29 +1,68 @@
 import BaseElement from "./BaseElement.js";
 import { css, html, join } from "./Lit.js";
+const style = css`
+:host{
+  display:block;
+}
 
+#container{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:stretch;
+}
+#container.v{
+  flex-direction:column;
+}
+#container.h{
+  flex-direction:row;
+}
+
+.knob{
+  background:rgba(99,99,99,.2);
+  border:solid rgba(50,50,50,.2) 1px;
+  user-select:none;
+  box-sizing:border-box;
+}
+.knob.h{
+  width:8px;
+  height:max(100%,8px);
+  cursor:col-resize;
+}
+.knob.v{
+  height:8px;
+  width:max(100%,8px);
+  cursor:row-resize;
+}
+`;
 
 class EventListenerManager {
-    #list = [];
-    #element;
-    constructor(element){
-        this.#element = element;
+  #list = [];
+  #element;
+  constructor(element){
+    this.#element = element;
+  }
+  register(...a){
+    this.#list.push(a);
+  }
+  assignAll(){
+    for(const args of this.#list){
+      this.#element.addEventListener(...args);
     }
-    register(...a){
-        this.#list.push(a);
+  }
+  removeAll(){
+    for(const args of this.#list){
+      this.#element.removeEventListener(...args);
     }
-    assignAll(){
-        for(const args of this.#list){
-            this.#element.addEventListener(...args);
-        }
-    }
-    removeAll(){
-        for(const args of this.#list){
-            this.#element.removeEventListener(...args);
-        }
-    }
+  }
 }
 
 class Split extends BaseElement {
+
+  static get styles() {
+    return style;
+  }
+
   static get properties() {
     return {
       vertical: { type: Boolean },
@@ -58,22 +97,22 @@ class Split extends BaseElement {
     this.knob_overflow = false;
 
     this.#eventManager = new EventListenerManager(this);
-    this.#eventManager.register("mousemove", e => {
+    this.#eventManager.register("pointermove", e => {
       if (this.md !== null) {
         let move = e.movementX / this.offsetWidth;
         if (this.vertical) {
           move = e.movementY / this.offsetHeight;
         }
         if (move < 0) {
-            move = Math.abs(move);
-            const minWidth = this.min_weights[this.md]/this.weight_sum;
+          move = Math.abs(move);
+          const minWidth = this.min_weights[this.md]/this.weight_sum;
           if (this.currentWeight[this.md] - move < minWidth) {
             move = (this.currentWeight[this.md] - minWidth) / this.weight_sum;
           }
           move = -move;
         }
         else {
-            const minWidth = this.min_weights[this.md + 1]/this.weight_sum;
+          const minWidth = this.min_weights[this.md + 1]/this.weight_sum;
           if (this.currentWeight[this.md + 1] - move < minWidth) {
             move = (this.currentWeight[this.md + 1] - minWidth) / this.weight_sum;
           }
@@ -83,7 +122,16 @@ class Split extends BaseElement {
         this.requestUpdate();
       }
     });
-    this.#eventManager.register("mouseup", e => {
+    this.#eventManager.register("pointerup", e => {
+      this.md = null;
+    });
+    this.#eventManager.register("pointerleave", e=>{
+      this.md = null;
+    });
+    this.#eventManager.register("pointerout", e=>{
+      this.md = null;
+    });
+    this.#eventManager.register("pointercancel", e=>{
       this.md = null;
     });
   }
@@ -99,12 +147,16 @@ class Split extends BaseElement {
 
   createKnob(i) {
     if(!this.knob_overflow){
-        return html`
-            <div class="knob ${this.vertical ? "v" : "h"}"
-            @mousedown=${e => {
-                this.md = i;
-            }}></div>
-        `;
+      return html`
+        <div class="knob ${this.vertical ? "v" : "h"}"
+        @touchmove=${e => {
+          e.preventDefault();
+        }}
+        @pointerdown=${e => {
+          this.md = i;
+        }}
+        ></div>
+      `;
     }
     else {
       return html`
@@ -128,63 +180,26 @@ class Split extends BaseElement {
   render() {
     this.#updateCurrentWeightIfNeeded();
     return html`
-    <style>
-      :host{
-        cursor:${this.md != null ? (this.vertical ? "row-resize" : "col-resize") : ""};
-      }
-    </style>
-    <div id=container class="${this.vertical?"v":"h"}">
-    ${join(
+      <style>
+        :host{
+          cursor:${this.md != null ? (this.vertical ? "row-resize" : "col-resize") : ""};
+        }
+      </style>
+      <div id=container class="${this.vertical?"v":"h"}">
+      ${join(
         this.currentWeight.map((weight, i) => html`
-            <slot
-            name="${i}"
-            style="
-                ${this.md != null ? "user-select:none;pointer-events:none;" : ""}
-                ${this.vertical ? "height" : "width"}:${weight * 100}%;
-                display:block;
-            "
-            >${i}</slot>
+          <slot
+          name="${i}"
+          style="
+              ${this.md != null ? "user-select:none;pointer-events:none;" : ""}
+              ${this.vertical ? "height" : "width"}:${weight * 100}%;
+              display:block;
+          "
+          >${i}</slot>
         `),
         i=>this.createKnob(i),
-    )}
-    </div>
-`;
-  }
-  static get styles() {
-    return css`
-      :host{
-        display:block;
-      }
-      
-      #container{
-        width:100%;
-        height:100%;
-        display:flex;
-        align-items:stretch;
-      }
-      #container.v{
-        flex-direction:column;
-      }
-      #container.h{
-        flex-direction:row;
-      }
-
-      .knob{
-        background:rgba(99,99,99,.2);
-        border:solid rgba(50,50,50,.2) 1px;
-        user-select:none;
-        box-sizing:border-box;
-      }
-      .knob.h{
-        width:8px;
-        height:max(100%,8px);
-        cursor:col-resize;
-      }
-      .knob.v{
-        height:8px;
-        width:max(100%,8px);
-        cursor:row-resize;
-      }
+      )}
+      </div>
     `;
   }
 }

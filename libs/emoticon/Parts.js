@@ -51,18 +51,6 @@ const InjectorParts = (partsName, previewPartsList=simplePartsList) => (name, in
   };
   return data;
 }
-/*
-const Body = (name, inserts=[]) => {
-  const body = {name};
-
-  const {props, listKeys, list} = InsertParser("body", simplePartsList, inserts);
-
-  body.content = (options) => {
-    return genPreview(list, {...options, body:props}, listKeys);
-  };
-  return body;
-}
-*/
 const Body = InjectorParts("body");
 
 export {Eye, Mouth, Cheek, Outline, Body};

@@ -170,7 +170,11 @@ class Split extends BaseElement {
             ${this.vertical ? "top" : "left"}:-4px;
             position:absolute;
           "
-          @mousedown=${e => {
+          
+          @touchmove=${e => {
+            e.preventDefault();
+          }}
+          @pointerdown=${e => {
             this.md = i;
           }}></div>
         </div>

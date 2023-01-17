@@ -736,14 +736,17 @@ const style = css`
   user-select:none;
   overflow-y:scroll;
   align-items:start;
+
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  place-content:start;
 }
 
 .previewItem{
   border-radius:4px;
   border:1px solid lightgray;
-  width:100px;
-  min-height:100px;
-  flex-basis:100px;
+  width:100%;
+  height:min(40vmin, 100px);
   overflow:hidden;
   white-space:nowrap;
 }

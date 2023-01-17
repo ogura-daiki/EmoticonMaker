@@ -122,16 +122,16 @@ class Split extends BaseElement {
         this.requestUpdate();
       }
     });
-    this.#eventManager.register("pointerup", e => {
+    this.#eventManager.register("touchend", e => {
+      this.md = null;
+    });
+    this.#eventManager.register("mouseup", e => {
       this.md = null;
     });
     this.#eventManager.register("pointerleave", e=>{
       this.md = null;
     });
     this.#eventManager.register("pointerout", e=>{
-      this.md = null;
-    });
-    this.#eventManager.register("pointercancel", e=>{
       this.md = null;
     });
   }
@@ -152,7 +152,10 @@ class Split extends BaseElement {
         @touchmove=${e => {
           e.preventDefault();
         }}
-        @pointerdown=${e => {
+        @touchstart=${e => {
+          this.md = i;
+        }}
+        @mousedown=${e => {
           this.md = i;
         }}
         ></div>
@@ -170,13 +173,17 @@ class Split extends BaseElement {
             ${this.vertical ? "top" : "left"}:-4px;
             position:absolute;
           "
-          
+
           @touchmove=${e => {
             e.preventDefault();
           }}
-          @pointerdown=${e => {
+          @touchstart=${e => {
             this.md = i;
-          }}></div>
+          }}
+          @mousedown=${e => {
+            this.md = i;
+          }}
+          ></div>
         </div>
       `;
     }

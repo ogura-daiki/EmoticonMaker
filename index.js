@@ -31,6 +31,7 @@ const getTemplateValues = (data) => {
   const v = [...values, ''].map(e => typeof e === 'object' ? getTemplateValues(e) : e )      
   return v.join("");
 }
+const isVertical = ()=>document.documentElement.clientHeight>document.documentElement.clientWidth;
 
 class MyElement extends BaseElement{
   static get styles(){
@@ -40,12 +41,17 @@ class MyElement extends BaseElement{
   static get properties(){
     return {
       selectionParts:{type:Object},
+      vertical:{state:true},
     };
   }
 
   constructor(){
     super();
     this.selectionParts = undefined;
+    window.addEventListener("resize", e=>{
+      this.vertical = isVertical();
+    });
+    this.vertical = isVertical();
   }
 
   render(){
@@ -57,6 +63,7 @@ class MyElement extends BaseElement{
       class="fill"
       vertical
       .min_weights=${[0.05, 0.05]}
+      ?vertical=${this.vertical}
     >
     <div slot=0 class="centering fill">
       ${when(

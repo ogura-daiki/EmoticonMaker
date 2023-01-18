@@ -1,5 +1,6 @@
 import Bodies from "../parts/Bodies.js";
 import Cheeks from "../parts/Cheeks.js";
+import EyeBrows from "../parts/EyeBrows.js";
 import Eyes from "../parts/Eyes.js";
 import Mouths from "../parts/Mouths.js";
 import Outlines from "../parts/Outlines.js";
@@ -8,6 +9,7 @@ import { css, html, when } from "./Lit.js";
 
 const defaultOptions = {
   body:Bodies.items[0],
+  eyebrow:EyeBrows.items[0],
   outline:Outlines.items[0],
   cheek:Cheeks.items[0],
   eye:Eyes.items[0],
@@ -103,6 +105,7 @@ class PartsPicker extends BaseElement {
       Cheeks,
       Eyes,
       Mouths,
+      EyeBrows,
       Bodies,
     ];
     this.selection=this.partsGroups[0].id;

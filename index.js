@@ -3,6 +3,7 @@ import BaseElement from "./elements/BaseElement.js";
 import "./elements/Split.js";
 import "./elements/PartsPicker.js";
 import "./elements/FittingInput.js";
+import { buildResult } from "./libs/emoticon/Parts.js";
 
 const style = css`
 :host{
@@ -56,7 +57,7 @@ class MyElement extends BaseElement{
 
   render(){
 
-    const previewValue = this.selectionParts?getTemplateValues(this.selectionParts.body.content(this.selectionParts)):"";
+    const previewValue = this.selectionParts?getTemplateValues(buildResult(this.selectionParts)):"";
 
     return html`
     <split-panel

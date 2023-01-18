@@ -1,4 +1,4 @@
-import { genPreview, InsertParser, InsertTarget, LeftRight, simplePartsList } from "./core.js";
+import { genPreview, Insert, InsertParser, InsertTarget, LeftRight, simplePartsList } from "./core.js";
 
 const SimpleParts = (input, {option:optionModifier, partsList=simplePartsList, highlights}) => {
   return (name, ...parts) => {
@@ -6,6 +6,7 @@ const SimpleParts = (input, {option:optionModifier, partsList=simplePartsList, h
     return {
       ...data,
       name,
+      builder:({list, options})=>({list,options:optionModifier(options, data)}),
       content:(options) => genPreview(partsList, optionModifier(options, data), highlights),
     };
   }
@@ -47,10 +48,51 @@ const InjectorParts = (partsName, previewPartsList=simplePartsList) => (name, in
 
   const {props, listKeys, list} = InsertParser(partsName, previewPartsList, inserts);
   data.content = (options) => {
-    return genPreview(list, {...options, body:props}, listKeys);
+    return genPreview(list, {...options, [partsName]:props}, listKeys);
   };
+  data.builder = ({list, options})=>{
+    const {props, list:appended} = InsertParser(partsName, [...list], inserts);
+    return {list:appended, options:{...options, [partsName]:props}};
+  }
   return data;
 }
 const Body = InjectorParts("body");
+const Eyebrow = (()=>{
+  return (name, {ll, lr, rl, rr}) => {
+    const fn = InjectorParts("eyebrow");
+    const pairs = [
+      [
+        [ll, ["left", "Before"]],
+        [lr, ["left", "After"]],
+      ],
+      [
+        [rl, ["right", "Before"]],
+        [rr, ["right", "After"]],
+      ],
+    ];
+    const inserts = pairs.map(
+      a=>(
+        ([value, [lr, ba]])=>Insert[ba](value, InsertTarget.eye[lr])
+      )(
+        typeof a[0][0]==="string"?a[0]:a[1]
+      )
+    );
+    const result = fn(name, inserts);
+    return result;
+  }
+})();
 
-export {Eye, Mouth, Cheek, Outline, Body};
+const sortedGroupNames = [
+  "outline", "eye", "mouth", "cheek", "eyebrow", "body"
+];
+
+const buildResult = (selected) => {
+  console.log(selected);
+  const {list, options} = sortedGroupNames.reduce((c, name)=>{
+    return selected[name].builder(c);
+  }, {list:[...simplePartsList], options:{}});
+  console.log({list, options})
+  return genPreview(list, options);
+};
+
+export {Eye, Mouth, Cheek, Outline, Eyebrow, Body, sortedGroupNames, buildResult};

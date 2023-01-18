@@ -94,5 +94,6 @@ export default {
     Mouth("土曜日ど", "J"),
     Mouth("土曜日ど", "Ｊ"),
     Mouth("パァ", "ᐛ"),
+    Mouth("鼻と口", "⍤"),
   ],
 };

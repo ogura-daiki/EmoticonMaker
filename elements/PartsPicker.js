@@ -6,6 +6,7 @@ import Mouths from "../parts/Mouths.js";
 import Outlines from "../parts/Outlines.js";
 import BaseElement from "./BaseElement.js";
 import { css, html, when } from "./Lit.js";
+import "./VirtualScroller.js";
 
 const defaultOptions = {
   body:Bodies.items[0],
@@ -85,7 +86,13 @@ const style = css`
 }
 `;
 
-
+const loopArray = (array, count) => {
+  let result = [];
+  for(let c=0;c<count;c++){
+    result = result.concat(array);
+  }
+  return result;
+}
 
 class PartsPicker extends BaseElement {
   static get styles(){
@@ -124,22 +131,28 @@ class PartsPicker extends BaseElement {
           >${label}</button>
         `)}
       </div>
-      <div class="grow row wrap previewList scrollOverlay">
       ${when(this.selection!=undefined, ()=>{
         const partsGroup = this.partsGroups.find(i=>i.id === this.selection);
-        return partsGroup.items.map(item=>html`
-          <div class="col previewItem" @click=${e=>{
-            this.#selectionParts[partsGroup.id] = item;
-            this.emit("change", {selectionParts:this.#selectionParts});
-          }}>
-            <span class="centering grow">
-              <span class="content">${item.content(this.#selectionParts)}</span>
-            </span>
-            <span class="name">${item.name}</span>
-          </div>
-        `)
+        return html`
+        <virtual-scroller
+          class="grow previewList scrollOverlay"
+          .items=${partsGroup.items}
+          .key=${(item, index)=>partsGroup.id+index}
+          .calcItem=${(item)=>102}
+          .createView=${(item)=>html`
+            <div class="col previewItem" @click=${e=>{
+              this.#selectionParts[partsGroup.id] = item;
+              this.emit("change", {selectionParts:this.#selectionParts});
+            }}>
+              <span class="centering grow">
+                <span class="content">${item.content(this.#selectionParts)}</span>
+              </span>
+              <span class="name">${item.name}</span>
+            </div>
+          `}
+        ></virtual-scroller>
+        `;
       })}
-      </div>
     </div>
     `;
   }

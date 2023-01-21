@@ -1,9 +1,10 @@
 import { genPreview, Insert, InsertParser, InsertTarget, LeftRight, simplePartsList } from "./core.js";
 
-const SimpleParts = (input, {option:optionModifier, partsList=simplePartsList, highlights}) => {
+const SimpleParts = (input, {groupId, option:optionModifier, partsList=simplePartsList, highlights}) => {
   return (name, ...parts) => {
     const data = input(...parts);
     return {
+      groupId,
       ...data,
       name,
       builder:({list, options})=>({list,options:optionModifier(options, data)}),
@@ -17,6 +18,7 @@ const dataTo = name=>(options, data)=>({...options, [name]:data});
 const Eye = SimpleParts(
   LeftRight,
   {
+    groupId:"eye",
     option:dataTo("eye"),
     highlights:[InsertTarget.eye.left, InsertTarget.eye.right],
   }
@@ -24,6 +26,7 @@ const Eye = SimpleParts(
 const Mouth = SimpleParts(
   value=>({value}),
   {
+    groupId:"mouth",
     option:dataTo("mouth"),
     highlights:[InsertTarget.mouth],
   }
@@ -31,6 +34,7 @@ const Mouth = SimpleParts(
 const Outline = SimpleParts(
   LeftRight,
   {
+    groupId:"outline",
     option:dataTo("outline"),
     highlights:[InsertTarget.outline.left, InsertTarget.outline.right],
   }
@@ -38,13 +42,14 @@ const Outline = SimpleParts(
 const Cheek = SimpleParts(
   LeftRight,
   {
+    groupId:"cheek",
     option:dataTo("cheek"),
     highlights:[InsertTarget.cheek.left, InsertTarget.cheek.right],
   }
 );
 
 const InjectorParts = (partsName, previewPartsList=simplePartsList) => (name, inserts=[]) => {
-  const data = {name};
+  const data = {groupId:partsName, name};
 
   const {props, listKeys, list} = InsertParser(partsName, previewPartsList, inserts);
   data.content = (options) => {

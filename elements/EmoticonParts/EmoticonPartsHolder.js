@@ -17,6 +17,15 @@ class EmoticonPartsHolder extends RecyclerView.ViewHolder {
         this.name = view.querySelector(".name");
         this.content = view.querySelector(".content");
     }
+
+    #oldOptions;
+    changeOnClick(...options){
+        if(this.#oldOptions){
+            this.itemView.removeEventListener("click", ...this.#oldOptions);
+        }
+        this.#oldOptions = options;
+        this.itemView.addEventListener("click", ...options);
+    }
 }
 
 export { EmoticonPartsHolder };

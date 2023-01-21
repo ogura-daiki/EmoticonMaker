@@ -22,11 +22,14 @@ const EmoticonPartsAdapter = class extends RecyclerView.Adapter {
     onBindViewHolder(holder, position) {
         const item = this._itemList[position];
 
-        holder.itemView.addEventListener("click", e=>{
+        holder.changeOnClick(e=>{
+            this.ctx.selectionParts[item.groupId] = item;
             console.log(item);
-        })
+            this.ctx.emit("change", {selectionParts:this.ctx.selectionParts});
+        }, {composed:true, bubbles:true});
         holder.name.textContent = item.name;
         render(item.content(this.ctx.selectionParts), holder.content);
+        console.log(item, holder.itemView);
     }
 
     getItemType(){

@@ -8,7 +8,6 @@ import BaseElement from "./BaseElement.js";
 import { EmoticonPartsAdapter } from "./EmoticonParts/EmoticonPartsAdapter.js";
 import { css, html, when } from "./Lit.js";
 import LinearLayoutManager from "./RecyclerView.js/LinearLayoutManager.js";
-import "./VirtualScroller.js";
 
 const layoutManager = new LinearLayoutManager();
 

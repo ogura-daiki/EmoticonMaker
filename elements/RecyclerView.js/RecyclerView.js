@@ -37,6 +37,7 @@ const style = css`
   height: 100%;
   overflow: hidden;
   contain: strict;
+  pointer-events:none;
 }
 
 .holderSlot{

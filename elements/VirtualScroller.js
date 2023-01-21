@@ -27,13 +27,24 @@ class LinearLayout {
     this.vertical = vertical;
   }
 
-  getSumSize(items, calcItem){
+  get #orientationName(){
+    return this.vertical?"height":"width";
+  }
+  get #widthName(){
+    return this.vertical?"width":"height";
+  }
+  getSpacerSize(items, calcItem){
     const length = items.length;
     let sum = 0;
+    const orientation = this.#orientationName;
+    //横幅ではなく、配置方向に対して90度回転させた向きの幅
+    const widthAttribute = this.vertical?"clientWidth":"clientHeight";
+    const result = {[this.#widthName]:this[widthAttribute]};
     for(let index=0;index<length;index+=1){
-      sum += calcItem(items[index], index);
+      sum += calcItem(items[index], index)[orientation];
     }
-    return {height:sum, width:this.#scroller.clientWidth};
+    result[orientation] = sum;
+    return result;
   }
 
   #scroller;
@@ -53,6 +64,7 @@ class LinearLayout {
 
     let currentTop = 0;
     let index = 0;
+    const orientation = this.#orientationName;
     if(this.#beforeFirstItem){
       //前回の結果からforループを削減できる。
       currentTop = this.#beforeFirstItem.top;
@@ -65,7 +77,7 @@ class LinearLayout {
           if (currentTop <= scrollTop - 20) {
             break;
           }
-          currentTop -= size;
+          currentTop -= size[orientation];
         }
         const result = {top:currentTop, index};
         this.#beforeFirstItem = result;
@@ -76,7 +88,7 @@ class LinearLayout {
     //前回から下方向を表示するスクロールなので下方向に探索
     for (; index < items.length; index += 1) {
       const item = items[index];
-      const size = calcItem(item, index);
+      const size = calcItem(item, index)[orientation];
       const nextTop = currentTop + size;
       //表示領域の上端から2上に20pxの位置にアイテムの最下部（次のアイテムの最上部）がある場合
       if (scrollTop - 20 <= nextTop) {
@@ -100,12 +112,14 @@ class LinearLayout {
     const clientHeight = this.#scroller.clientHeight;
     const scrollAreaBottom = scrollTop + clientHeight;
 
+    const orientation = this.#orientationName;
+
     for (; index < items.length; index += 1) {
       if (scrollAreaBottom + 20 < currentTop) {
         break;
       }
       const item = items[index];
-      const size = calcItem(item, index, items);
+      const size = calcItem(item, index, items)[orientation];
       currentTop += size;
     }
     const lastIndex = index;
@@ -115,6 +129,8 @@ class LinearLayout {
   }
 
   layout(items, key, itemRange, createView, calcItem){
+
+    const orientation = this.#orientationName;
 
     const displayItems = items.slice(itemRange.firstIndex, itemRange.lastIndex + 1);
     const keyWrapper = (item, index) => key(item, index + itemRange.firstIndex);
@@ -134,7 +150,7 @@ class LinearLayout {
         style="display:block;position:absolute;width:100%;top:${top}px"
         name=${keyWrapper(item, index)}></slot>
       `;
-      top+=calcItem(item, index+itemRange.firstIndex);
+      top+=calcItem(item, index+itemRange.firstIndex)[orientation];
       return holder;
     })}
     `;
@@ -181,19 +197,12 @@ class VirtualScroller extends LitElement {
       //timerId = requestAnimationFrame(()=>this.requestUpdate());
     });
     this.calcItem = (item, index) => {
-      return 24;
+      return {width:this.clientWidth, height:24};
     }
     this.layout = new LinearLayout();
   }
 
   #sizes = new Map();
-  #calcAll() {
-    const sum = this.#items.reduce((sum, item, index) => {
-      const size = this.calcItem(item, index);
-      return sum + size;
-    }, 0);
-    return sum;
-  }
   #hasChanged = true;
   updateSize(key) {
     this.#hasChanged = true;
@@ -207,7 +216,7 @@ class VirtualScroller extends LitElement {
   }
 
   render() {
-    const size = this.#layout.getSumSize(this.#items, this.calcItem);
+    const size = this.#layout.getSpacerSize(this.#items, this.calcItem);
 
     //アイテムの変更により表示中の領域がアイテムの合計高さよりも下になった場合、スクロール位置をアイテムの下端に合わせる。
     if(size.height < this.scrollTop+this.clientHeight){

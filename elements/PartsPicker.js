@@ -138,7 +138,7 @@ class PartsPicker extends BaseElement {
           class="grow previewList scrollOverlay"
           .items=${partsGroup.items}
           .key=${(item, index)=>partsGroup.id+index}
-          .calcItem=${(item)=>102}
+          .calcItem=${(item)=>({height:102, width:this.clientWidth})}
           .createView=${(item)=>html`
             <div class="col previewItem" @click=${e=>{
               this.#selectionParts[partsGroup.id] = item;

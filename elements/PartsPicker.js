@@ -5,8 +5,12 @@ import Eyes from "../parts/Eyes.js";
 import Mouths from "../parts/Mouths.js";
 import Outlines from "../parts/Outlines.js";
 import BaseElement from "./BaseElement.js";
+import { EmoticonPartsAdapter } from "./EmoticonParts/EmoticonPartsAdapter.js";
 import { css, html, when } from "./Lit.js";
+import LinearLayoutManager from "./RecyclerView.js/LinearLayoutManager.js";
 import "./VirtualScroller.js";
+
+const layoutManager = new LinearLayoutManager();
 
 const defaultOptions = {
   body:Bodies.items[0],
@@ -23,8 +27,7 @@ const style = css`
   flex-flow:column;
 }
 .previewList{
-  padding:8px;
-  gap:8px;
+  padding:4px;
   user-select:none;
   overflow-y:scroll;
   align-items:start;
@@ -37,10 +40,13 @@ const style = css`
 .previewItem{
   border-radius:4px;
   border:1px solid lightgray;
-  width:100%;
+  width:calc(100% - 16px);
   height:min(40vmin, 100px);
   overflow:hidden;
   white-space:nowrap;
+
+  box-sizing:border-box;
+  margin:4px;
 }
 .previewItem .content{
   color:lightgray;
@@ -104,7 +110,7 @@ class PartsPicker extends BaseElement {
       selection:{type:Number},
     };
   }
-  #selectionParts;
+  selectionParts;
   constructor(){
     super();
     this.partsGroups = [
@@ -116,7 +122,7 @@ class PartsPicker extends BaseElement {
       Bodies,
     ];
     this.selection=this.partsGroups[0].id;
-    this.#selectionParts = {...defaultOptions};
+    this.selectionParts = {...defaultOptions};
   }
   render(){
     return html`
@@ -133,24 +139,13 @@ class PartsPicker extends BaseElement {
       </div>
       ${when(this.selection!=undefined, ()=>{
         const partsGroup = this.partsGroups.find(i=>i.id === this.selection);
+        
         return html`
-        <virtual-scroller
+        <recycler-view
           class="grow previewList scrollOverlay"
-          .items=${partsGroup.items}
-          .key=${(item, index)=>partsGroup.id+index}
-          .calcItem=${(item)=>({height:102, width:this.clientWidth})}
-          .createView=${(item)=>html`
-            <div class="col previewItem" @click=${e=>{
-              this.#selectionParts[partsGroup.id] = item;
-              this.emit("change", {selectionParts:this.#selectionParts});
-            }}>
-              <span class="centering grow">
-                <span class="content">${item.content(this.#selectionParts)}</span>
-              </span>
-              <span class="name">${item.name}</span>
-            </div>
-          `}
-        ></virtual-scroller>
+          .adapter=${new EmoticonPartsAdapter(partsGroup.items, this)}
+          .layoutManager=${layoutManager}
+        ></recycler-view>
         `;
       })}
     </div>

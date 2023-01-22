@@ -129,11 +129,11 @@ class RecyclerView extends BaseElement {
       this.#scroller.style.height = this.clientHeight + "px";
 
       clearTimeout(timerId);
-      timerId = setTimeout(() => {
+      timerId = requestAnimationFrame(() => {
         if (this.#layoutManager) {
           this.#layoutManager._relayout();
         }
-      }, 0);
+      });
 
     });
     rObs.observe(this);

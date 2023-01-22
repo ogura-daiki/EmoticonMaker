@@ -45,7 +45,7 @@ const FlowLayoutManager = class extends LayoutManager {
   #getRowItems(){
     const clientWidth = this.#view.clientWidth;
     const count = Math.max(1, Math.floor(clientWidth/(this.#sizeRange.min||this.#sizeRange.max||clientWidth)));
-    const size = Math.min(Math.max(this.#sizeRange.min, clientWidth/count), this.#sizeRange.max);
+    const size = Math.min(Math.max(this.#sizeRange.min, clientWidth/count), this.#sizeRange.max||Math.max(clientWidth, this.#sizeRange.min));
     return {count, size};
   }
 

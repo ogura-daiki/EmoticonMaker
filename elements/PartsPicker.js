@@ -9,7 +9,7 @@ import { EmoticonPartsAdapter } from "./EmoticonParts/EmoticonPartsAdapter.js";
 import { css, html, when } from "./Lit.js";
 import FlowLayoutManager from "./RecyclerView.js/FlowLayoutManager.js";
 
-const layoutManager = new FlowLayoutManager({min:150, max:300});
+const layoutManager = new FlowLayoutManager({min:150});
 
 const defaultOptions = {
   body:Bodies.items[0],

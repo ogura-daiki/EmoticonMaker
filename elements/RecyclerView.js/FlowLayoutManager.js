@@ -125,7 +125,6 @@ const FlowLayoutManager = class extends LayoutManager {
       else
         start = pos + 1;
     }
-    console.log(pos, rowItemCount);
     return { pos, top: this.#sizeList[pos].top }
   }
 

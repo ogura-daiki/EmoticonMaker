@@ -142,8 +142,9 @@ const FlowLayoutManager = class extends LayoutManager {
     let layoutBottom = bottomPos.top + this.#sizeList[bottomPos.pos].height;
     this.#firstPos = 0;
     let pos = 0;
+    const lastPos = Math.max(this.#sizeList.length -1, this.#firstPos + this.#getRowItems().count);
     const adapter = this.#view.getAdapter();
-    while (pos < adapter.getItemCount() && layoutBottom < scrollBottom) {
+    while (pos < adapter.getItemCount() && pos < lastPos) {
       const type = adapter.getItemType(pos);
       const holder = this.#view._getFreeHolder(this, type);
       adapter.onBindViewHolder(holder, pos);
@@ -170,10 +171,11 @@ const FlowLayoutManager = class extends LayoutManager {
     this.#view.scrollTop = this.#sizeList[this.#firstPos].top;
     this.#firstPos = this._calcPos(this.#sizeList[this.#firstPos].top).pos;
     const scrollBottom = this.#view.scrollTop + this.#view.clientHeight;
-    let layoutBottom = this.#sizeList[this.#firstPos].top;
+    let layoutBottom = this.#sizeList[this.#firstPos].top + this.#sizeList[this.#firstPos].height;
     let pos = this.#firstPos;
+    const lastPos = Math.max(this.#sizeList.length -1, this.#firstPos + this.#getRowItems().count);
     const adapter = this.#view.getAdapter();
-    while (pos < adapter.getItemCount() && layoutBottom < scrollBottom) {
+    while (pos < adapter.getItemCount() && pos < lastPos) {
       const type = adapter.getItemType(pos);
       const holder = this.#view._getFreeHolder(this, type);
       adapter.onBindViewHolder(holder, pos);

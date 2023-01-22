@@ -88,6 +88,11 @@ class RecyclerView extends BaseElement {
     this.#holderPosMap = new Map();
     this.#typedHolderListMap = new Map();
   }
+
+  #contentSize;
+  get contentSize(){
+    return {...this.#contentSize};
+  }
   firstUpdated() {
     const root = this.renderRoot;
 
@@ -123,10 +128,13 @@ class RecyclerView extends BaseElement {
     //this.#container.style.width = this.clientWidth+"px";
     let timerId;
     const rObs = new ResizeObserver((entry) => {
-      this.#tempSlot.style.width = this.clientWidth + "px";
-      this.#tempSlot.style.height = this.clientHeight + "px";
-      this.#scroller.style.width = this.clientWidth + "px";
-      this.#scroller.style.height = this.clientHeight + "px";
+      const {width, height} = entry[0].contentRect;
+      this.#contentSize = {width, height};
+      console.log();
+      this.#tempSlot.style.width = width + "px";
+      this.#tempSlot.style.height = height + "px";
+      this.#scroller.style.width = width + "px";
+      this.#scroller.style.height = height + "px";
 
       clearTimeout(timerId);
       timerId = requestAnimationFrame(() => {

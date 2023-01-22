@@ -29,7 +29,7 @@ const EmoticonPartsAdapter = class extends RecyclerView.Adapter {
         }, {composed:true, bubbles:true});
         holder.name.textContent = item.name;
         render(item.content(this.ctx.selectionParts), holder.content);
-        console.log(item, holder.itemView);
+        //console.log(item, holder.itemView);
     }
 
     getItemType(){

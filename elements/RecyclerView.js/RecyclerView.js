@@ -233,11 +233,29 @@ class RecyclerView extends BaseElement {
    * @param {HTMLElement} view 
    * @returns {Object}
    */
-  _calcSize(view) {
+  _calcSize(view, options) {
     this.append(this.#tempContainer);
     this.renderRoot.append(this.#tempSlot);
     let height = 0, width = 0;
-    const flag = view.parentNode;
+    const flag = view.parentNode === this.#tempContainer;
+    if(options){
+      if(options.width){
+        if(options.width.min){
+          this.#tempContainer.style.minWidth = options.width.min+"px";
+        }
+        if(options.width.max){
+          this.#tempContainer.style.maxWidth = options.width.max+"px";
+        }
+      }
+      if(options.height){
+        if(options.height.min){
+          this.#tempContainer.style.minHeight = options.height.min+"px";
+        }
+        if(options.height.max){
+          this.#tempContainer.style.maxHeight = options.height.max+"px";
+        }
+      }
+    }
     if (!flag) {
       this.#tempContainer.append(view);
     }
@@ -246,6 +264,10 @@ class RecyclerView extends BaseElement {
     if (!flag) {
       this.#tempContainer.removeChild(view);
     }
+    this.#tempContainer.style.minWidth = "unset";
+    this.#tempContainer.style.maxWidth = "unset";
+    this.#tempContainer.style.minHeight = "unset";
+    this.#tempContainer.style.maxHeight = "unset";
     //console.log(width, height);
     return { height, width };
   }

@@ -7,9 +7,10 @@ import Outlines from "../parts/Outlines.js";
 import BaseElement from "./BaseElement.js";
 import { EmoticonPartsAdapter } from "./EmoticonParts/EmoticonPartsAdapter.js";
 import { css, html, when } from "./Lit.js";
+import FlowLayoutManager from "./RecyclerView.js/FlowLayoutManager.js";
 import LinearLayoutManager from "./RecyclerView.js/LinearLayoutManager.js";
 
-const layoutManager = new LinearLayoutManager();
+const layoutManager = new FlowLayoutManager({min:150, max:300});
 
 const defaultOptions = {
   body:Bodies.items[0],

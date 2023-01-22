@@ -166,8 +166,8 @@ const FlowLayoutManager = class extends LayoutManager {
     this._calcAll();
 
     //console.log({"c":this.#firstPos, "b":this.#bf});
-    this.#firstPos += this.#bf === this.#firstPos ? 0 : (this.#bf < this.#firstPos ? 0 : 1);// = this._calcPos(this.scrollTop).pos;
-    this.#view.scrollTop = this.#sizeList[this.#firstPos].top;
+    //this.#firstPos += this.#bf === this.#firstPos ? 0 : (this.#bf < this.#firstPos ? 0 : 1);// = this._calcPos(this.scrollTop).pos;
+    //this.#view.scrollTop = this.#sizeList[this.#firstPos].top;
     this.#firstPos = this._calcPos(this.#sizeList[this.#firstPos].top).pos;
     const scrollBottom = this.#view.scrollTop + this.#view.clientHeight;
     let layoutBottom = this.#sizeList[this.#firstPos].top + this.#sizeList[this.#firstPos].height;

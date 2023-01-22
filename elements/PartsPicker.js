@@ -39,7 +39,7 @@ const style = css`
 .previewItem{
   border-radius:4px;
   border:1px solid lightgray;
-  width:calc(100% - 16px);
+  width:calc(100% - 8px);
   height:min(40vmin, 100px);
   overflow:hidden;
   white-space:nowrap;

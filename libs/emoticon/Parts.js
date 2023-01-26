@@ -1,4 +1,4 @@
-import { genPreview, Insert, InsertParser, InsertTarget, LeftRight, simplePartsList } from "./core.js";
+import { genPreview, Insert, InsertParser, InsertTarget, LeftRight, NamedTarget, simplePartsList } from "./core.js";
 
 const SimpleParts = (input, {groupId, option:optionModifier, partsList=simplePartsList, highlights}) => {
   return (name, ...parts) => {
@@ -100,4 +100,12 @@ const buildResult = (selected) => {
   return genPreview(list, options);
 };
 
-export {Eye, Mouth, Cheek, Outline, Eyebrow, Body, sortedGroupNames, buildResult};
+const buildPreview = (selected, highlightKey) => {
+  const {list, options} = sortedGroupNames.reduce((c, name)=>{
+    return selected[name].builder(c);
+  }, {list:[...simplePartsList], options:{}});
+  const highlights = list.filter(name => name.startsWith(highlightKey));
+  return genPreview(list, options, highlights.map(NamedTarget));
+}
+
+export {Eye, Mouth, Cheek, Outline, Eyebrow, Body, sortedGroupNames, buildResult, buildPreview};

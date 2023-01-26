@@ -80,4 +80,4 @@ const LeftRight = (...v) => {
   return { left, right };
 }
 
-export { LeftRight, simplePartsList, genPreview, InsertTarget, Insert, InsertParser };
+export { NamedTarget, LeftRight, simplePartsList, genPreview, InsertTarget, Insert, InsertParser };

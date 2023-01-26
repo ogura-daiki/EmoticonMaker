@@ -1,4 +1,5 @@
 import { render } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js';
+import { buildPreview } from '../../libs/emoticon/Parts.js';
 import { RecyclerView } from "../RecyclerView.js/RecyclerView.js";
 import { EmoticonPartsHolder } from "./EmoticonPartsHolder.js";
 
@@ -28,7 +29,7 @@ const EmoticonPartsAdapter = class extends RecyclerView.Adapter {
             this.ctx.emit("change", {selectionParts:this.ctx.selectionParts});
         }, {composed:true, bubbles:true});
         holder.name.textContent = item.name;
-        render(item.content(this.ctx.selectionParts), holder.content);
+        render(buildPreview({...this.ctx.selectionParts, [item.groupId]:item}, item.groupId), holder.content);
         //console.log(item, holder.itemView);
     }
 

@@ -69,7 +69,6 @@ const FlowLayoutManager = class extends LayoutManager {
         size = { ...this.#sizeList[sameSize] };
       }
       else {
-        console.log("notequal")
         uniqueItem.push(pos);
         const type = adapter.getItemType(pos);
         let holder = this.#calcHolderMap.get(type);
@@ -130,63 +129,21 @@ const FlowLayoutManager = class extends LayoutManager {
   }
 
   firstLayout() {
-    console.log("firstLayout");
-    this._calcAll();
-    //中身を初期化
-    this.#view._destroyContents();
-    //スクロール位置をリセット
-    this.#view.scrollTop = 0;
-    //スクロール領域の下端を計算
-    const scrollBottom = this.#view.scrollTop + this.#view.clientHeight;
-    const bottomPos = this._calcPos(this.#view.scrollTop);
-    let layoutBottom = bottomPos.top + this.#sizeList[bottomPos.pos].height;
-    this.#firstPos = 0;
-    let pos = 0;
-    const adapter = this.#view.getAdapter();
-    while (pos < adapter.getItemCount() && this.#sizeList[pos].top < scrollBottom) {
-      const type = adapter.getItemType(pos);
-      const holder = this.#view._getFreeHolder(this, type);
-      adapter.onBindViewHolder(holder, pos);
-      this.#view._attachHolder(pos, holder);
 
-      const size = this.#sizeList[pos];
-      holder.slot.style.top = size.top + "px";
-      holder.slot.style.left = size.left + "px";
-      holder.slot.style.width = size.width+"px";
-      layoutBottom = size.top + size.height;
-      pos++;
-    }
-    this.#lastPos = pos - 1;
+    this.#firstPos = 0;
+    this.#lastPos = 0;
+    this._calcAll();
+    this._layoutChildren(0);
   }
 
   _relayout() {
     //中身を初期化
     this.#view._destroyContents();
 
+    this.#firstPos = 0;
+    this.#lastPos = 0;
     this._calcAll();
-
-    //console.log({"c":this.#firstPos, "b":this.#bf});
-    //this.#firstPos += this.#bf === this.#firstPos ? 0 : (this.#bf < this.#firstPos ? 0 : 1);// = this._calcPos(this.scrollTop).pos;
-    //this.#view.scrollTop = this.#sizeList[this.#firstPos].top;
-    this.#firstPos = this._calcPos(this.#sizeList[this.#firstPos].top).pos;
-    const scrollBottom = this.#view.scrollTop + this.#view.clientHeight;
-    let layoutBottom = this.#sizeList[this.#firstPos].top + this.#sizeList[this.#firstPos].height;
-    let pos = this.#firstPos;
-    const adapter = this.#view.getAdapter();
-    while (pos < adapter.getItemCount() && this.#sizeList[pos].top < scrollBottom) {
-      const type = adapter.getItemType(pos);
-      const holder = this.#view._getFreeHolder(this, type);
-      adapter.onBindViewHolder(holder, pos);
-      this.#view._attachHolder(pos, holder);
-      
-      const size = this.#sizeList[pos];
-      holder.slot.style.top = size.top + "px";
-      holder.slot.style.left = size.left + "px";
-      holder.slot.style.width = size.width+"px";
-      layoutBottom = size.top + size.height;
-      pos++;
-    }
-    this.#lastPos = pos - 1;
+    this._layoutChildren(0);
   }
 
 
@@ -196,7 +153,6 @@ const FlowLayoutManager = class extends LayoutManager {
     let calcedLast = this._calcPos(this.#view.scrollTop + this.#view.clientHeight);
     calcedLast.pos = Math.min(this.#sizeList.length-1, calcedLast.pos + this.#getRowItems().count);
     calcedLast.top+=this.#sizeList[calcedLast.pos].height;
-    //console.log(this.#firstPos, calcedFirst, this.#lastPos, calcedLast);
 
     let firstTop = this.#sizeList[this.#firstPos].top;
     let lastBottom = this.#sizeList[this.#lastPos].top + this.#sizeList[this.#lastPos].height;
@@ -205,6 +161,7 @@ const FlowLayoutManager = class extends LayoutManager {
 
     this.#bf = this.#firstPos;
     this.#bl = this.#lastPos;
+
     //画面上部にはみ出しているとき
     if (this.#firstPos < calcedFirst.pos) {
       while (this.#firstPos < Math.min(calcedFirst.pos, this.#lastPos + 1)) {
@@ -228,12 +185,10 @@ const FlowLayoutManager = class extends LayoutManager {
       if (this.#firstPos > calcedLast.pos) {
         this.#firstPos = calcedLast.pos + 1;
         firstTop = calcedLast.top + this.#sizeList[this.#firstPos - 1].height;
-        //console.log("^^^^");
       }
 
       while (this.#firstPos > calcedFirst.pos) {
         const type = adapter.getItemType(--this.#firstPos);
-        //console.log(this.#firstPos, calcedFirst.pos);
         const holder = this.#view._getFreeHolder(this, type);
         adapter.onBindViewHolder(holder, this.#firstPos);
         this.#view._attachHolder(this.#firstPos, holder);
@@ -250,12 +205,10 @@ const FlowLayoutManager = class extends LayoutManager {
       if (this.#lastPos < calcedFirst.pos) {
         this.#lastPos = calcedFirst.pos - 1;
         lastBottom = calcedFirst.top;
-        //console.log("^^^^");
       }
 
       while (this.#lastPos < calcedLast.pos) {
-        const type = adapter.getItemType(++this.#lastPos);
-        //console.log(this.#lastPos, calcedLast.pos);
+        const type = adapter.getItemType(this.#lastPos);
         const holder = this.#view._getFreeHolder(this, type);
         adapter.onBindViewHolder(holder, this.#lastPos);
         this.#view._attachHolder(this.#lastPos, holder);
@@ -265,6 +218,7 @@ const FlowLayoutManager = class extends LayoutManager {
         holder.slot.style.left = size.left + "px";
         holder.slot.style.width = size.width+"px";
         lastBottom = size.top + size.height;
+        this.#lastPos++;
       }
     }
 

@@ -142,7 +142,7 @@ class PartsPicker extends BaseElement {
         return html`
         <recycler-view
           class="grow previewList scrollOverlay"
-          .adapter=${new EmoticonPartsAdapter(loopArray(partsGroup.items, 20), this)}
+          .adapter=${new EmoticonPartsAdapter(partsGroup.items, this)}
           .layoutManager=${layoutManager}
         ></recycler-view>
         `;

@@ -6,7 +6,7 @@ import Mouths from "../parts/Mouths.js";
 import Outlines from "../parts/Outlines.js";
 import BaseElement from "./BaseElement.js";
 import { EmoticonPartsAdapter } from "./EmoticonParts/EmoticonPartsAdapter.js";
-import { css, html, when } from "./Lit.js";
+import { css, html, when, guard } from "./Lit.js";
 import FlowLayoutManager from "./RecyclerView.js/FlowLayoutManager.js";
 
 const layoutManager = new FlowLayoutManager({min:150});
@@ -136,17 +136,17 @@ class PartsPicker extends BaseElement {
           >${label}</button>
         `)}
       </div>
-      ${when(this.selection!=undefined, ()=>{
+      ${guard([this.selection], ()=>when(this.selection!= undefined, ()=>{
         const partsGroup = this.partsGroups.find(i=>i.id === this.selection);
         
         return html`
         <recycler-view
           class="grow previewList scrollOverlay"
-          .adapter=${new EmoticonPartsAdapter(partsGroup.items, this)}
+          .adapter=${new EmoticonPartsAdapter(loopArray(partsGroup.items, 20), this)}
           .layoutManager=${layoutManager}
         ></recycler-view>
         `;
-      })}
+      }))}
     </div>
     `;
   }

@@ -38,8 +38,6 @@ const FlowLayoutManager = class extends LayoutManager {
    */
   detachedRecyclerView(recyclerView) {
     super.detachedRecyclerView(recyclerView);
-    //Viewをnullに設定
-    this.#view = null;
   }
 
   #getRowItems(){
@@ -52,14 +50,15 @@ const FlowLayoutManager = class extends LayoutManager {
   _calcAll() {
     const adapter = this.#view.getAdapter();
     this.#calcHolderMap = new Map();
-    this.#sizeList = [];
     this.#allHeight = 0;
     let uniqueItem = [];
+    const itemCount = adapter.getItemCount();
+    this.#sizeList = new Array(adapter.getItemCount());
 
     const {count:rowItemCount, size:rowItemSize} = this.#getRowItems();
-    for (let pos = 0; pos < adapter.getItemCount(); pos++) {
+    for (let pos = 0; pos < itemCount; pos++) {
       let sameSize = -1;
-      for (let uipos of uniqueItem) {
+      for (const uipos of uniqueItem) {
         if (adapter.sizeEquals(uipos, pos)) {
           sameSize = uipos;
           break;
@@ -70,6 +69,7 @@ const FlowLayoutManager = class extends LayoutManager {
         size = { ...this.#sizeList[sameSize] };
       }
       else {
+        console.log("notequal")
         uniqueItem.push(pos);
         const type = adapter.getItemType(pos);
         let holder = this.#calcHolderMap.get(type);
@@ -85,9 +85,10 @@ const FlowLayoutManager = class extends LayoutManager {
       size.width = rowItemSize;
       size.top = Math.floor(pos/rowItemCount) * size.height;
       size.left = pos%rowItemCount * rowItemSize;
-      this.#sizeList.push(size);
-      this.#allHeight = size.top + size.height;
+      this.#sizeList[pos] = size;
     }
+    const last = this.#sizeList[this.#sizeList.length-1];
+    this.#allHeight = last.top + last.height;
     this.#view._setScrollerHeight(this.#allHeight);
   }
 
@@ -129,7 +130,7 @@ const FlowLayoutManager = class extends LayoutManager {
   }
 
   firstLayout() {
-
+    console.log("firstLayout");
     this._calcAll();
     //中身を初期化
     this.#view._destroyContents();
@@ -141,9 +142,8 @@ const FlowLayoutManager = class extends LayoutManager {
     let layoutBottom = bottomPos.top + this.#sizeList[bottomPos.pos].height;
     this.#firstPos = 0;
     let pos = 0;
-    const lastPos = Math.max(this.#sizeList.length -1, this.#firstPos + this.#getRowItems().count);
     const adapter = this.#view.getAdapter();
-    while (pos < adapter.getItemCount() && pos < lastPos) {
+    while (pos < adapter.getItemCount() && this.#sizeList[pos].top < scrollBottom) {
       const type = adapter.getItemType(pos);
       const holder = this.#view._getFreeHolder(this, type);
       adapter.onBindViewHolder(holder, pos);
@@ -172,9 +172,8 @@ const FlowLayoutManager = class extends LayoutManager {
     const scrollBottom = this.#view.scrollTop + this.#view.clientHeight;
     let layoutBottom = this.#sizeList[this.#firstPos].top + this.#sizeList[this.#firstPos].height;
     let pos = this.#firstPos;
-    const lastPos = Math.max(this.#sizeList.length -1, this.#firstPos + this.#getRowItems().count);
     const adapter = this.#view.getAdapter();
-    while (pos < adapter.getItemCount() && pos < lastPos) {
+    while (pos < adapter.getItemCount() && this.#sizeList[pos].top < scrollBottom) {
       const type = adapter.getItemType(pos);
       const holder = this.#view._getFreeHolder(this, type);
       adapter.onBindViewHolder(holder, pos);

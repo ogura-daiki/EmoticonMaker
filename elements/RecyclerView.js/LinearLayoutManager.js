@@ -35,8 +35,6 @@ const LinearLayoutManager = class extends LayoutManager {
    */
   detachedRecyclerView(recyclerView) {
     super.detachedRecyclerView(recyclerView);
-    //Viewをnullに設定
-    this.#view = null;
   }
 
   _calcAll() {

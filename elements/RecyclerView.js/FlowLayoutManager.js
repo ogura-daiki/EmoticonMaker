@@ -129,11 +129,7 @@ const FlowLayoutManager = class extends LayoutManager {
   }
 
   firstLayout() {
-
-    this.#firstPos = 0;
-    this.#lastPos = 0;
-    this._calcAll();
-    this._layoutChildren(0);
+    this._relayout();
   }
 
   _relayout() {

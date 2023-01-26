@@ -92,11 +92,9 @@ const sortedGroupNames = [
 ];
 
 const buildResult = (selected) => {
-  console.log(selected);
   const {list, options} = sortedGroupNames.reduce((c, name)=>{
     return selected[name].builder(c);
   }, {list:[...simplePartsList], options:{}});
-  console.log({list, options})
   return genPreview(list, options);
 };
 

@@ -88,7 +88,8 @@ class VirtualScroller extends BaseElement {
         return key;
       }
     })();
-    this.equalsItemSize = ({item:i1, index:idx1}, {item:i2, index:idx2})=>true;
+    //this.equalsItemSize = ({item:i1, index:idx1}, {item:i2, index:idx2})=>true;
+    this.equalsItemSize = ()=>true;
     this.layout = new LinearLayoutManager();
   }
 
@@ -168,6 +169,10 @@ class VirtualScroller extends BaseElement {
   #tempSlot;
   #scroller;
   #contentSize;
+
+  get contentSize(){
+    return {...this.#contentSize};
+  }
   firstUpdated(){
     const root = this.renderRoot;
 
@@ -214,6 +219,7 @@ class VirtualScroller extends BaseElement {
       clearTimeout(timerId);
       timerId = requestAnimationFrame(() => {
         if (this.#layout) {
+          this.#layout._calcAll();
           this.requestUpdate();
         }
       });

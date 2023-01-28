@@ -1,3 +1,4 @@
+import { buildPreview } from "../libs/emoticon/Parts.js";
 import Bodies from "../parts/Bodies.js";
 import Cheeks from "../parts/Cheeks.js";
 import EyeBrows from "../parts/EyeBrows.js";
@@ -8,6 +9,8 @@ import BaseElement from "./BaseElement.js";
 import { EmoticonPartsAdapter } from "./EmoticonParts/EmoticonPartsAdapter.js";
 import { css, html, when, guard } from "./Lit.js";
 import FlowLayoutManager from "./RecyclerView.js/FlowLayoutManager.js";
+import "./VirtualScroller/VirtualScroller.js";
+
 
 const layoutManager = new FlowLayoutManager({min:150});
 
@@ -140,11 +143,24 @@ class PartsPicker extends BaseElement {
         const partsGroup = this.partsGroups.find(i=>i.id === this.selection);
         
         return html`
-        <recycler-view
+        <virtual-scroller
           class="grow previewList scrollOverlay"
-          .adapter=${new EmoticonPartsAdapter(partsGroup.items, this)}
-          .layoutManager=${layoutManager}
-        ></recycler-view>
+          .items=${partsGroup.items}
+          .key=${(item, index)=>`${item.groupId}:${index}`}
+          .renderItem=${(item, index)=>html`
+            <div class="col previewItem"
+              @click=${e=>{
+                this.selectionParts[item.groupId] = item;
+                this.emit("change", {selectionParts:this.selectionParts});
+              }}
+            >
+              <span class="centering grow">
+                <span class="content">${buildPreview({...this.selectionParts, [item.groupId]:item}, item.groupId)}</span>
+              </span>
+              <span class="name">${item.name}</span>
+            </div>
+          `}
+        ></virtual-scroller>
         `;
       }))}
     </div>

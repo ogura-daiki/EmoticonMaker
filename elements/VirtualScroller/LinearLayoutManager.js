@@ -42,8 +42,9 @@ const LinearLayoutManager = class extends LayoutManager {
           return {...uniqueSize};
         }
       }
-
-      return this.#view._calcSize(item, index);
+      const size = this.#view._calcSize(item, index);
+      uniqueSizes.set(index, size);
+      return size;
     }
 
     let top = 0;

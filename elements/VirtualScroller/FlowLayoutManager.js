@@ -1,4 +1,4 @@
-import { html } from "../Lit.js";
+import { html, styleMap } from "../Lit.js";
 import LayoutManager from "./LayoutManager.js";
 
 /**
@@ -91,17 +91,15 @@ const FlowLayoutManager = class extends LayoutManager {
 
   renderSlot(item, key, index){
     const layout = this.#layouts[index];
+    const styles = {...layout};
+    styles.top += "px";
+    styles.left += "px";
+    styles.width += "px";
+    styles.height += "px";
     return html`
     <slot
       name=${key}
-      style="
-        display:block;
-        position:absolute;
-        top:${layout.top}px;
-        left:${layout.left}px;
-        width:${layout.width}px;
-        height:${layout.height}px
-      "
+      style=$${styleMap(styles)}
     ></slot>`;
   }
 

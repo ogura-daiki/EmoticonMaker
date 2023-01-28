@@ -41,10 +41,11 @@ const style = css`
   pointer-events:none;
 }
 
-.holderSlot{
+#scroller>slot{
   width:fit-content;
   height:fit-content;
   display:block;
+  position:absolute;
 }
 `;
 
@@ -149,10 +150,15 @@ class VirtualScroller extends BaseElement {
     const displayItems = this.items.slice(this.#range.first, this.#range.first+this.#range.count);
     const wrapIndex = func => (v,i) => func(v, i+this.#range.first);
     render(
-      html`${displayItems.map(wrapIndex((v,i)=>html`
-      <div style="display:contents" slot=${this.key(v, i)}>
-        ${this.renderItem(v, i)}
-      </div>`))}`,
+      repeat(
+        displayItems,
+        wrapIndex(this.key),
+        wrapIndex((v,i)=>html`
+          <div style="display:contents" slot=${this.key(v, i)}>
+            ${this.renderItem(v, i)}
+          </div>`
+        )
+      ),
       this
     );
     return html`
@@ -161,11 +167,7 @@ class VirtualScroller extends BaseElement {
       </div>
     </div>
     <div id="scroller" style="height:${scrollerHeight}px">
-      ${repeat(
-        displayItems,
-        wrapIndex(this.key),
-        wrapIndex((v,i)=>this.#layout.renderSlot(v, this.key(v, i), i))
-      )}
+      ${displayItems.map(wrapIndex((v,i)=>this.#layout.renderSlot(v, this.key(v, i), i)))}
     </div>
     `;
   }

@@ -188,21 +188,25 @@ class RecyclerView extends BaseElement {
   
   //HolderをScrollerに追加、追加位置と追加された事を記憶
   _attachHolder(pos, holder) {
+    if(this.#getHolder(pos) !== holder){
+      this._detachHolder(pos);
+    }
     holder.active = true;
     this.append(holder.itemView);
     holder.itemView.slot = holder.__holderID;
+    holder.slot.setAttribute("pos", pos);
+    holder.itemView.setAttribute("pos", pos);
     this.#scroller.append(holder.slot);
     this.#holderPosMap.set(pos, holder);
   }
 
   _detachHolder(pos) {
     const holder = this.#getHolder(pos);
+    console.log(pos, holder)
     if (holder) {
-      if (holder.itemView){
-        holder.itemView.remove();
-        holder.slot.remove();
-      }
-      this.#holderPosMap.set(pos, undefined);
+      holder.itemView?.remove();
+      holder.slot?.remove();
+      this.#holderPosMap.delete(pos);
       holder.active = false;
     }
   }
@@ -286,6 +290,10 @@ class RecyclerView extends BaseElement {
 
   _destroyContents() {
     //中身を初期化
+    for(const pos of this.#holderPosMap.keys()){
+      this._detachHolder(pos);
+    }
+    return;
     while (this.#scroller.firstChild) {
       this.#scroller.removeChild(this.#scroller.firstChild);
     }

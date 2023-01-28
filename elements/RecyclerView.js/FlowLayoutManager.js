@@ -117,7 +117,7 @@ const FlowLayoutManager = class extends LayoutManager {
       const ctop = this.#sizeList[pos].top;
       const cbottom = ctop + this.#sizeList[pos].height;
       if (ctop <= point && point <= cbottom){
-        pos = Math.max(0, pos-pos % rowItemCount);
+        pos = Math.max(0, pos-(pos % rowItemCount));
         break;
       }
       else if (point < ctop)
@@ -159,16 +159,12 @@ const FlowLayoutManager = class extends LayoutManager {
     this.#bl = this.#lastPos;
 
     //画面上部にはみ出しているとき
-    if (this.#firstPos < calcedFirst.pos) {
-      while (this.#firstPos < Math.min(calcedFirst.pos, this.#lastPos + 1)) {
-        this.#view._detachHolder(this.#firstPos++);
-      }
+    while (this.#firstPos < Math.min(calcedFirst.pos, this.#lastPos + 1)) {
+      this.#view._detachHolder(this.#firstPos++);
     }
     //画面下部にはみ出しているとき
-    if (this.#lastPos > calcedLast.pos) {
-      while (this.#lastPos > Math.max(calcedLast.pos, this.#firstPos - 1)) {
-        this.#view._detachHolder(this.#lastPos--);
-      }
+    while (this.#lastPos > Math.max(calcedLast.pos, this.#firstPos - 1)) {
+      this.#view._detachHolder(this.#lastPos--);
     }
 
 

@@ -141,6 +141,11 @@ class VirtualScroller extends BaseElement {
     else{
       this.#range = {first:0, count:0};
     }
+
+    if(this.#scroller){
+      this.#scroller.style.height = scrollerHeight+"px";
+    }
+
     const displayItems = this.items.slice(this.#range.first, this.#range.first+this.#range.count);
     const wrapIndex = func => (v,i) => func(v, i+this.#range.first);
     render(

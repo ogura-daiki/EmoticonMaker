@@ -6,10 +6,9 @@ import Eyes from "../parts/Eyes.js";
 import Mouths from "../parts/Mouths.js";
 import Outlines from "../parts/Outlines.js";
 import BaseElement from "./BaseElement.js";
-import { EmoticonPartsAdapter } from "./EmoticonParts/EmoticonPartsAdapter.js";
 import { css, html, when, guard } from "./Lit.js";
-import FlowLayoutManager from "./VirtualScroller/FlowLayoutManager.js";
 import "./VirtualScroller/VirtualScroller.js";
+import FlowLayoutManager from "./VirtualScroller/FlowLayoutManager.js";
 
 
 const layoutManager = new FlowLayoutManager({min:150});

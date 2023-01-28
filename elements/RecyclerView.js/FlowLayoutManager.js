@@ -145,8 +145,8 @@ const FlowLayoutManager = class extends LayoutManager {
 
   _layoutChildren(dy) {
 
-    let calcedFirst = this._calcPos(this.#view.scrollTop);
-    let calcedLast = this._calcPos(this.#view.scrollTop + this.#view.clientHeight);
+    let calcedFirst = this._calcPos(this.#view.scrollTop - this.#view.clientHeight);
+    let calcedLast = this._calcPos(this.#view.scrollTop + this.#view.clientHeight + this.#view.clientHeight);
     calcedLast.pos = Math.min(this.#sizeList.length-1, calcedLast.pos + this.#getRowItems().count);
     calcedLast.top+=this.#sizeList[calcedLast.pos].height;
 
@@ -163,16 +163,12 @@ const FlowLayoutManager = class extends LayoutManager {
       while (this.#firstPos < Math.min(calcedFirst.pos, this.#lastPos + 1)) {
         this.#view._detachHolder(this.#firstPos++);
       }
-      if (this.#firstPos === this.#lastPos)
-        this.#firstPos = calcedFirst.pos;
     }
     //画面下部にはみ出しているとき
     if (this.#lastPos > calcedLast.pos) {
       while (this.#lastPos > Math.max(calcedLast.pos, this.#firstPos - 1)) {
         this.#view._detachHolder(this.#lastPos--);
       }
-      if (this.#firstPos === this.#lastPos)
-        this.#lastPos = calcedLast.pos;
     }
 
 

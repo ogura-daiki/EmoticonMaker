@@ -8,7 +8,7 @@ import Outlines from "../parts/Outlines.js";
 import BaseElement from "./BaseElement.js";
 import { EmoticonPartsAdapter } from "./EmoticonParts/EmoticonPartsAdapter.js";
 import { css, html, when, guard } from "./Lit.js";
-import FlowLayoutManager from "./RecyclerView.js/FlowLayoutManager.js";
+import FlowLayoutManager from "./VirtualScroller/FlowLayoutManager.js";
 import "./VirtualScroller/VirtualScroller.js";
 
 
@@ -32,11 +32,6 @@ const style = css`
   padding:4px;
   user-select:none;
   overflow-y:scroll;
-  align-items:start;
-
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  place-content:start;
 }
 
 .previewItem{
@@ -145,6 +140,7 @@ class PartsPicker extends BaseElement {
         return html`
         <virtual-scroller
           class="grow previewList scrollOverlay"
+          .layout=${layoutManager}
           .items=${partsGroup.items}
           .key=${(item, index)=>`${item.groupId}:${index}`}
           .renderItem=${(item, index)=>html`

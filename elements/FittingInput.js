@@ -1,4 +1,4 @@
-import { findFitStrWidth } from "../libs/calcStrWidth.js";
+import { findFitStrRect, findFitStrWidth } from "../libs/calcStrWidth.js";
 import BaseElement from "./BaseElement.js";
 import { css, html } from "./Lit.js";
 
@@ -41,7 +41,7 @@ class FittingInput extends BaseElement {
     if(!input){
       input = this;
     }
-    const fontSize = findFitStrWidth(this.clientWidth, this.value||"F", getComputedStyle(this).fontFamily);
+    const fontSize = findFitStrRect(this.value||"F", {font:getComputedStyle(this).fontFamily, width:this.clientWidth, height:this.clientHeight});
     return html`
     <input
       id="input"

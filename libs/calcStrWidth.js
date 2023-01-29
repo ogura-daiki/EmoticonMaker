@@ -17,14 +17,14 @@ const getStyledCache = (style) => {
   return result;
 }
 
-const calcStrWidth = (str, style) => {
+const calcStrSize = (str, style) => {
   const cache = getStyledCache(style);
   if(cache.has(str)){
     return cache.get(str);
   }
   const ctx = canvas.getContext("2d");
   ctx.font = style;
-  const result = ctx.measureText(str).width;
+  const result = ctx.measureText(str);
   cache.set(str, result);
   return result;
 }
@@ -35,7 +35,7 @@ const findFitStrWidth = (width, str, style, max=width) => {
   let count = 1000;
   while(count > 0){
     let sizedStyle = `${before}px ${style}`;
-    const calcedWidth = calcStrWidth(str, sizedStyle);
+    const calcedWidth = calcStrSize(str, sizedStyle).width;
     if(calcedWidth === width) return before;
     if(history.has(before)){
       if(calcedWidth > width) return before-1;
@@ -47,4 +47,20 @@ const findFitStrWidth = (width, str, style, max=width) => {
   }
 }
 
-export {calcStrWidth, findFitStrWidth};
+const findFitStrRect = (str, {width, height, font}) => {
+  const widthFit = findFitStrWidth(width, str, font, width);
+  let before = widthFit;
+  let count = 1000;
+  while(count > 0){
+    let sizedStyle = `${before}px ${font.replace(/\d+px/, "")}`;
+    const rect = calcStrSize(str, sizedStyle);
+    const calcedHeight = rect.actualBoundingBoxAscent + rect.actualBoundingBoxDescent;
+    if(calcedHeight <= height){
+      return before;
+    }
+    before--;
+    count--;
+  }
+}
+
+export {calcStrSize, findFitStrWidth, findFitStrRect};
